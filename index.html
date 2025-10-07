@@ -1,0 +1,168 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Scratch to Reveal</title>
+  
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      text-align: center;
+      padding: 30px;
+      background-color: #E38AAE;
+    }
+
+    #scratchCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .container {
+      position: relative;
+      display: inline-block;
+      width: 350px;
+      border: 6px solid #9d1258;
+      border-radius: 20px;
+      box-shadow: 0 0 15px #8F0B0B;
+      overflow: hidden;
+    }
+
+    img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    #revealMessage {
+      margin-top: 20px;
+      font-size: 1.6rem;
+      color: #E41B17;
+      font-weight: bold;
+      display: none;
+      animation: fadeIn 1s ease-in-out forwards, sparkle 1.5s infinite ease-in-out;
+      text-shadow: 0 0 8px #ffb6c1, 0 0 12px #ff69b4;
+    }
+
+    h1 {
+      font-family: 'Pacifico', cursive;
+      color: #e75480;
+      font-size: 2.8rem;
+      margin-bottom: 10px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes sparkle {
+      0%, 100% {
+        text-shadow: 0 0 8px #ffb6c1, 0 0 12px #ff69b4;
+        transform: scale(1);
+      }
+      50% {
+        text-shadow: 0 0 12px #ffc0cb, 0 0 20px #ff69b4;
+        transform: scale(1.05);
+      }
+    }
+
+    
+    .wrapper {
+      border: 8px solid #C83F49;
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 420px;
+      margin: 0 auto;
+      background-color: #FDD7E4;
+      box-shadow: 0 0 20px #C24641;
+    }
+  </style>
+</head>
+<body>
+
+  
+  <div class="wrapper">
+
+    <h1>Hey Cukki Patiyo 🥺💕…</h1>
+    <p>𝑰’𝒎 𝒏𝒐𝒕 𝒑𝒆𝒓𝒇𝒆𝒄𝒕😔, 𝒃𝒖𝒕 𝑰 𝒑𝒓𝒐𝒎𝒊𝒔𝒆 𝒎𝒚 𝒍𝒐𝒗𝒆 𝒇𝒐𝒓 𝒚𝒐𝒖 𝒂𝒍𝒘𝒂𝒚𝒔 𝒊𝒔😊🫶🏻….<br>
+      𝘚𝘤𝘳𝘢𝘵𝘤𝘩 𝘛𝘩𝘪𝘴 🥹♥️!
+    </p>
+
+    <div class="container">
+      <img id="hiddenImage" src="image.png" alt="Hidden Photo">
+      <canvas id="scratchCanvas"></canvas>
+    </div>
+
+    <div id="revealMessage"> 𝑰 𝑳𝒐𝒗𝒆 𝒀𝒐𝒖 𝑺𝒐 𝑴𝒖𝒄𝒉 𝑻𝒉𝒂𝒓𝒂𝒏𝒊 ♥️♥️… !</div>
+
+  </div>
+
+  <script>
+    const canvas = document.getElementById('scratchCanvas');
+    const ctx = canvas.getContext('2d');
+    const img = document.getElementById('hiddenImage');
+    const message = document.getElementById('revealMessage');
+    let isDrawing = false;
+    let revealed = false;
+
+    img.onload = () => {
+      canvas.width = img.clientWidth;
+      canvas.height = img.clientHeight;
+
+      ctx.fillStyle = 'gray';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.globalCompositeOperation = 'destination-out';
+
+      const getMouse = (e) => {
+        const rect = canvas.getBoundingClientRect();
+        return {
+          x: e.clientX - rect.left,
+          y: e.clientY - rect.top
+        };
+      };
+
+      const checkRevealProgress = () => {
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        let clearedPixels = 0;
+
+        for (let i = 0; i < imageData.data.length; i += 4) {
+          if (imageData.data[i + 3] === 0) {
+            clearedPixels++;
+          }
+        }
+
+        const totalPixels = canvas.width * canvas.height;
+        const clearedPercentage = clearedPixels / totalPixels;
+
+        if (clearedPercentage > 0.6 && !revealed) {
+          revealed = true;
+          message.style.display = 'block';
+        }
+      };
+
+      canvas.addEventListener('mousedown', () => isDrawing = true);
+      canvas.addEventListener('mouseup', () => {
+        isDrawing = false;
+        checkRevealProgress();
+      });
+      canvas.addEventListener('mouseleave', () => {
+        isDrawing = false;
+        checkRevealProgress();
+      });
+
+      canvas.addEventListener('mousemove', (e) => {
+        if (!isDrawing) return;
+        const { x, y } = getMouse(e);
+        ctx.beginPath();
+        ctx.arc(x, y, 25, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    };
+  </script>
+
+</body>
+</html>
+
+
